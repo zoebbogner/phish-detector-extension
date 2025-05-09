@@ -1,0 +1,70 @@
+# -------------------
+# macOS system files
+# -------------------
+.DS_Store
+
+# -------------------
+# Python environment
+# -------------------
+venv/
+.env
+.envrc
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# -------------------
+# Jupyter notebooks
+# -------------------
+.ipynb_checkpoints/
+
+# -------------------
+# Cursor/VSCode editor configs
+# -------------------
+.vscode/
+.cursor/
+
+# -------------------
+# Model files & exports
+# -------------------
+*.h5
+*.onnx
+*.pb
+*.pkl
+*.joblib
+*.tflite
+
+# NOTE: Don't ignore all .json — we use .json for model weights & manifest
+# If needed, add exceptions like:
+# !meta/meta_model.json
+# !extension/manifest.json
+
+# -------------------
+# Logs and temp files
+# -------------------
+*.log
+*.tmp
+
+# -------------------
+# Chrome extension build/output
+# -------------------
+extension/node_modules/
+extension/dist/
+*.zip
+*.rar
+
+# -------------------
+# Data (except README.md placeholders)
+# -------------------
+data/raw/*
+!data/raw/README.md
+
+data/processed/*
+!data/processed/README.md
+
+models/*
+!models/README.md
+
+meta/*
+!meta/README.md
