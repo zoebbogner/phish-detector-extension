@@ -15,7 +15,7 @@ from utils.constants import (
 from utils.data_helpers import ensure_data_dir, build_benign_df, validate_df, save_to_csv
 
 
-def fetch_tranco_urls(top_n: int = 1000) -> Optional[pd.DataFrame]:
+def fetch_tranco_urls(top_n: int = 100000) -> Optional[pd.DataFrame]:
     """Fetch top N domains from Tranco, convert to https URLs, and return as DataFrame."""
     print(f"[INFO] Fetching Tranco top {top_n} domains...")
     try:
