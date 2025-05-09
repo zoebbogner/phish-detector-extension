@@ -6,8 +6,8 @@ from typing import Optional
 import io
 import requests
 import pandas as pd
-from utils.constants import OPENPHISH_URL, PHISHTANK_URL, OPENPHISH_CSV, PHISHTANK_CSV
-from utils.data_helpers import ensure_data_dir, build_phishing_df, save_to_csv
+from utils.constants import OPENPHISH_URL, PHISHTANK_URL, OPENPHISH_CSV, PHISHTANK_CSV, REQUIRED_COLUMNS
+from utils.data_helpers import ensure_data_dir, build_phishing_df, validate_df, save_to_csv
 
 
 def fetch_openphish() -> Optional[pd.DataFrame]:
@@ -47,22 +47,30 @@ def main() -> None:
     """Main function to fetch and save phishing URLs from both sources."""
     ensure_data_dir()
     openphish_df = fetch_openphish()
-    openphish_path = save_to_csv(openphish_df, OPENPHISH_CSV)
-    if openphish_path is not None:  
-        print(f"[INFO] OpenPhish saved to {openphish_path}")
-    
+    if openphish_df is not None and validate_df(openphish_df, REQUIRED_COLUMNS):
+        openphish_path = save_to_csv(openphish_df, OPENPHISH_CSV)
+        if openphish_path is not None:
+            print(f"[INFO] OpenPhish saved to {openphish_path}")
+    else:
+        print("[ERROR] OpenPhish DataFrame failed validation and was not saved.")
+
     phishtank_df = fetch_phishtank()
-    phishtank_path = save_to_csv(phishtank_df, PHISHTANK_CSV)
-    if phishtank_path is not None:
-        print(f"[INFO] PhishTank saved to {phishtank_path}")
-    
+    if phishtank_df is not None and validate_df(phishtank_df, REQUIRED_COLUMNS):
+        phishtank_path = save_to_csv(phishtank_df, PHISHTANK_CSV)
+        if phishtank_path is not None:
+            print(f"[INFO] PhishTank saved to {phishtank_path}")
+    else:
+        print("[ERROR] PhishTank DataFrame failed validation and was not saved.")
+
     total = 0
     if openphish_df is not None:
         total += len(openphish_df)
+        print(f"[INFO] OpenPhish URLs collected: {len(openphish_df)}")
     if phishtank_df is not None:
         total += len(phishtank_df)
+        print(f"[INFO] PhishTank URLs collected: {len(phishtank_df)}")
+        
     print(f"[INFO] Fetching complete. Total phishing URLs collected: {total}")
-
 
 if __name__ == "__main__":
     main() 
