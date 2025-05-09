@@ -5,7 +5,7 @@ DataFrame construction, validation, and saving.
 from datetime import datetime, timezone
 from typing import Optional
 import pandas as pd
-from utils.constants import RAW_DATA_DIR, REQUIRED_COLUMNS
+from utils.constants import RAW_DATA_DIR
 
 
 def ensure_data_dir() -> None:
