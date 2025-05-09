@@ -5,7 +5,7 @@ DataFrame construction, validation, and saving.
 from datetime import datetime, timezone
 from typing import Optional
 import pandas as pd
-from utils.constants import RAW_DATA_DIR
+from utils.constants import RAW_DATA_DIR, REQUIRED_COLUMNS
 
 
 def ensure_data_dir() -> None:
@@ -16,18 +16,27 @@ def ensure_data_dir() -> None:
     else:
         print(f"[INFO] Directory already exists: {RAW_DATA_DIR}")
 
-
-def build_phishing_df(urls, source_name: str) -> pd.DataFrame:
-    """Build a phishing DataFrame with required columns and UTC ISO timestamp. Deduplicate URLs."""
+def build_df(urls, source_name: str, label: int) -> pd.DataFrame:
+    """Build a DataFrame with required columns and UTC ISO timestamp. Deduplicate URLs."""
+    print(f"[INFO] Building DataFrame for {source_name} with {len(urls)} URLs")
     unique_urls = pd.Series(urls).drop_duplicates()
     timestamp = datetime.now(timezone.utc).isoformat()
     df = pd.DataFrame({
         'url': unique_urls,
-        'label': 1,
+        'label': label,
         'source': source_name,
         'timestamp': timestamp
     })
     return df
+
+def build_phishing_df(urls, source_name: str) -> pd.DataFrame:
+    """Build a phishing DataFrame with required columns and UTC ISO timestamp. Deduplicate URLs."""
+    return build_df(urls, source_name, 1)
+
+
+def build_benign_df(urls, source_name: str) -> pd.DataFrame:
+    """Build a benign DataFrame with required columns and UTC ISO timestamp. Deduplicate URLs."""
+    return build_df(urls, source_name, 0)
 
 
 def validate_df(df: pd.DataFrame, required_columns: list[str]) -> bool:
