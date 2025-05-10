@@ -25,21 +25,18 @@ def fetch_openphish() -> Optional[pd.DataFrame]:
 
 
 def fetch_phishtank() -> Optional[pd.DataFrame]:
-    """Fetch phishing URLs from PhishTank and return as a DataFrame."""
-    print("[INFO] Fetching PhishTank URLs...")
+    """Read phishing URLs from a local PhishTank CSV file and return as a DataFrame."""
+    print("[INFO] Reading PhishTank URLs from local CSV file...")
     try:
-        resp = requests.get(PHISHTANK_URL, timeout=30)
-        resp.raise_for_status()
-        df_raw = pd.read_csv(io.StringIO(resp.text))
+        df_raw = pd.read_csv("data/raw/phishtank.csv")
         if 'url' not in df_raw.columns:
             print("[ERROR] 'url' column not found in PhishTank data.")
             return None
-        
         urls = df_raw['url'].dropna().unique()
         print(f"[INFO] Retrieved {len(urls)} URLs from PhishTank.")
         return build_phishing_df(urls, 'PhishTank')
-    except requests.RequestException as e:
-        print(f"[ERROR] Failed to fetch from PhishTank: {e}")
+    except (pd.errors.ParserError, FileNotFoundError) as e:
+        print(f"[ERROR] Failed to read PhishTank CSV: {e}")
         return None
 
 
