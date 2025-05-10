@@ -1,27 +1,26 @@
 # Configuration for URL model training and deployment
 
 FEATURES = [
-    'url_length',
-    'path_depth',
-    'domain_length',
-    'num_subdomains',
-    'num_special_chars',
-    'num_digits',
-    'num_hyphens',
-    'num_underscores',
-    'has_at_symbol',
-    'query_length',
-    'num_query_params',
-    'contains_ip',
-    'digit_ratio',
-    'url_entropy',
-    'suspicious_word_count',
-    'has_https',
-    'dot_count',
-    'punycode_present',
-    'port_present',
-    'num_uppercase',
-    'longest_special_sequence'
+    "url_length",
+    "path_depth", 
+    "domain_length",
+    "num_subdomains",
+    "num_special_chars",
+    "num_digits",
+    "num_hyphens",
+    "has_at_symbol",
+    "query_length",
+    "num_query_params",
+    "contains_ip",
+    "digit_ratio",
+    "url_entropy",
+    "suspicious_word_count",
+    "has_https",
+    "dot_count",
+    "punycode_present",
+    "port_present",
+    "num_uppercase",
+    "longest_special_sequence"
 ]
 
 RAW_DATA_PATH = "data/processed/full_feature_set.csv"
