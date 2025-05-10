@@ -63,8 +63,5 @@ data/raw/*
 data/processed/*
 !data/processed/README.md
 
-models/*
-!models/README.md
-
 meta/*
 !meta/README.md
