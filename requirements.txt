@@ -1,7 +1,10 @@
-lxml
 pandas
-pandas
-requests
 numpy
+scikit-learn
+xgboost
+joblib
+requests
 beautifulsoup4
+faker
+lxml
 matplotlib

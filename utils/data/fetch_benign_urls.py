@@ -3,20 +3,26 @@
 Fetch benign URLs from Tranco, Wikipedia, and GitHub Pages, label and save as CSV using helpers.
 """
 from typing import Optional
+import random
+import argparse
 import io
 import zipfile
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
+from faker import Faker
+
 from utils.data.constants import (
     WIKIPEDIA_SEED_PAGES, GITHUB_PAGES, BENIGN_CSV, TRANCOLIST_URL,
     WIKIPEDIA_BASE_URL, REQUIRED_COLUMNS
 )
-from utils.data.data_helpers import ensure_data_dir, build_benign_df, validate_df, save_to_csv
+from utils.data.url_synthetic_templates import PATH_EXTENSIONS, QUERY_PARAM_TEMPLATES, enrich_tranco_domains
+from utils.data.data_helpers import ensure_data_dir, build_benign_df, save_to_csv
+
 
 
 def fetch_tranco_urls(top_n: int = 100000) -> Optional[pd.DataFrame]:
-    """Fetch top N domains from Tranco, convert to https URLs, and return as DataFrame."""
+    """Fetch top N domains from Tranco, enrich with realistic paths/queries, and return as DataFrame."""
     print(f"[INFO] Fetching Tranco top {top_n} domains...")
     try:
         resp = requests.get(TRANCOLIST_URL, timeout=30)
@@ -25,10 +31,8 @@ def fetch_tranco_urls(top_n: int = 100000) -> Optional[pd.DataFrame]:
             with z.open(z.namelist()[0]) as f:
                 df = pd.read_csv(f, header=None, names=["rank", "domain"])
                 domains = [str(d).strip() for d in df["domain"].head(top_n) if isinstance(d, str) and str(d).strip()]
-                urls = [f"https://{d}" for d in domains if d and not d.startswith("https://") and "://" not in d]
-                # Ensure all URLs start with https:// and are valid
-                urls = [u for u in urls if u.startswith("https://")]
-        print(f"[INFO] Retrieved {len(urls)} Tranco URLs.")
+                urls = enrich_tranco_domains(domains)
+        print(f"[INFO] Retrieved {len(urls)} enriched Tranco URLs.")
         return build_benign_df(urls, "Tranco")
     except (requests.RequestException, zipfile.BadZipFile, pd.errors.ParserError) as e:
         print(f"[ERROR] Failed to fetch Tranco list: {e}")
@@ -71,14 +75,56 @@ def fetch_github_pages() -> Optional[pd.DataFrame]:
         return None
 
 
+def generate_synthetic_benign_urls(n: int = 20000, seed: int = 42) -> list[str]:
+    """Generate a list of synthetic benign URLs using Faker and templates."""
+    faker = Faker()
+    random.seed(seed)
+    Faker.seed(seed)
+    suspicious_benign_keywords = ["reset", "download", "profile", "account", "settings", "view", "cart", "checkout", "support", "help", "faq", "blog", "news", "forum", "order", "contact", "about", "search", "gallery", "events", "newsletter", "api"]
+    urls = []
+    for _ in range(n):
+        domain = faker.domain_name()
+        # Random path depth 1-10
+        path_depth = random.randint(1, 10)
+        path_parts = [random.choice(suspicious_benign_keywords) for _ in range(path_depth)]
+        # Sometimes use a template extension
+        if random.random() < 0.5:
+            path = random.choice(PATH_EXTENSIONS)
+        else:
+            path = "/" + "/".join(path_parts)
+        # Sometimes add a query string
+        if random.random() < 0.7:
+            query = random.choice(QUERY_PARAM_TEMPLATES)
+        else:
+            query = ""
+        url = f"https://{domain}{path}{query}"
+        urls.append(url)
+    return urls
+
+
 def main() -> tuple[Optional[str], Optional[pd.DataFrame]]:
     """Main function to fetch and save benign URLs from all sources."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--include-synthetic", action="store_true", help="Include synthetic benign URLs")
+    args = parser.parse_args()
+
     ensure_data_dir()
     tranco_df = fetch_tranco_urls(top_n=1000000)
     wikipedia_df = fetch_wikipedia_urls(max_links_per_page=50)
     github_df = fetch_github_pages()
 
     dfs: list[pd.DataFrame] = [df for df in [tranco_df, wikipedia_df, github_df] if df is not None]
+
+    # Synthetic URLs
+    if args.include_synthetic:
+        synthetic_urls = generate_synthetic_benign_urls(n=100000)
+        synthetic_df = pd.DataFrame({
+            "url": [u for u in synthetic_urls if u.startswith("https://")],
+            "label": 0,
+        })
+        dfs.append(synthetic_df)
+        print(f"[INFO] Synthetic URLs generated and included: {len(synthetic_df)}")
+
     if not dfs:
         print("[ERROR] No benign URLs collected from any source.")
         return None, None
