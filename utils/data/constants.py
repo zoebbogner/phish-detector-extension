@@ -37,3 +37,9 @@ GITHUB_PAGES: list[str] = [
 BENIGN_CSV: str = "benign_urls.csv" 
 
 TRANCOLIST_URL: str = "https://tranco-list.eu/top-1m.csv.zip"
+
+# Constants for data processing and feature extraction
+
+RAW_DIR = "data/raw"
+PROCESSED_PATH = "data/processed/full_feature_set.csv"
+RAW_FILES = ["openphish.csv", "phishtank.csv", "benign_urls.csv"]
