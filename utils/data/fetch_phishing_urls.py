@@ -3,10 +3,9 @@
 Fetch phishing URLs from OpenPhish and PhishTank, save as CSVs with labels and metadata.
 """
 from typing import Optional
-import io
 import requests
 import pandas as pd
-from utils.constants import OPENPHISH_URL, PHISHTANK_URL, OPENPHISH_CSV, PHISHTANK_CSV, REQUIRED_COLUMNS
+from utils.constants import OPENPHISH_URL, OPENPHISH_CSV, PHISHTANK_CSV, REQUIRED_COLUMNS
 from utils.data_helpers import ensure_data_dir, build_phishing_df, validate_df, save_to_csv
 
 
