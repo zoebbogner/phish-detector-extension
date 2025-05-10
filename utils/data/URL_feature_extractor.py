@@ -41,6 +41,7 @@ class URLFeatureExtractor:
         )
         self._uppercase_re = re.compile(r'[A-Z]')
 
+
     def fit(self, X, y=None):
         return self
 

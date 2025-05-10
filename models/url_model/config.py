@@ -2,11 +2,20 @@
 
 FEATURES = [
     "url_length",
-    "entropy",
-    "has_ip",
-    "is_https",
-    "keyword_count",
-    "tld_encoded"
+    "path_depth", 
+    "domain_length",
+    "num_subdomains",
+    "num_special_chars",
+    "num_digits",
+    "num_hyphens",
+    "num_underscores",
+    "has_at_symbol",
+    "query_length",
+    "num_query_params",
+    "contains_ip",
+    "digit_ratio",
+    "url_entropy",
+    "suspicious_word_count"
 ]
 
 RAW_DATA_PATH = "data/processed/full_feature_set.csv"
@@ -21,7 +30,6 @@ RANDOM_STATE = 42
 TEMPERATURE = 2.0
 
 XGB_PARAMS = {
-    "use_label_encoder": False,
     "eval_metric": "logloss",
     "random_state": RANDOM_STATE,
     "n_estimators": 200,

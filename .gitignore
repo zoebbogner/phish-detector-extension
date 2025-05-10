@@ -62,7 +62,16 @@ data/raw/*
 
 data/processed/*
 !data/processed/README.md
+!data/processed/extract_url_features.py
 
+*.pkl
+*.csv
+*.json
+*.txt
+*.png
+*.pdf
+*.html
+*.xml
 meta/*
 !meta/README.md
 

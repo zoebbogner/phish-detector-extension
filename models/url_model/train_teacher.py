@@ -5,7 +5,7 @@ import time
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
-from config import (
+from models.url_model.config import (
     FEATURES, RAW_DATA_PATH, TEACHER_MODEL_PATH, TEST_SIZE,
     RANDOM_STATE, FEATURE_IMPORTANCE_PATH, XGB_PARAMS,
     CLASSIFICATION_REPORT_PATH
