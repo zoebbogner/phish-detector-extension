@@ -8,11 +8,11 @@ import zipfile
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
-from utils.constants import (
+from utils.data.constants import (
     WIKIPEDIA_SEED_PAGES, GITHUB_PAGES, BENIGN_CSV, TRANCOLIST_URL,
     WIKIPEDIA_BASE_URL, REQUIRED_COLUMNS
 )
-from utils.data_helpers import ensure_data_dir, build_benign_df, validate_df, save_to_csv
+from utils.data.data_helpers import ensure_data_dir, build_benign_df, validate_df, save_to_csv
 
 
 def fetch_tranco_urls(top_n: int = 100000) -> Optional[pd.DataFrame]:
