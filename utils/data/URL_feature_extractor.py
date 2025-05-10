@@ -33,6 +33,23 @@ class URLFeatureExtractor:
         # Suspicious tokens often used in phishing URLs
         tokens = ['login', 'signin', 'secure', 'account', 'update', 'verify', 'ebayisapi', 'webscr']
         self._suspicious_pattern = re.compile('|'.join(tokens), re.IGNORECASE)
+        self.feature_names = [
+            'url_length',
+            'path_depth',
+            'domain_length',
+            'num_subdomains',
+            'num_special_chars',
+            'num_digits',
+            'num_hyphens',
+            'num_underscores',
+            'has_at_symbol',
+            'query_length',
+            'num_query_params',
+            'contains_ip',
+            'digit_ratio',
+            'url_entropy',
+            'suspicious_word_count'
+        ]
 
     def fit(self, X, y=None):
         # No fitting required
