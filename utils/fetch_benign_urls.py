@@ -74,7 +74,7 @@ def fetch_github_pages() -> Optional[pd.DataFrame]:
 def main() -> tuple[Optional[str], Optional[pd.DataFrame]]:
     """Main function to fetch and save benign URLs from all sources."""
     ensure_data_dir()
-    tranco_df = fetch_tranco_urls(top_n=2000)
+    tranco_df = fetch_tranco_urls(top_n=1000000)
     wikipedia_df = fetch_wikipedia_urls(max_links_per_page=50)
     github_df = fetch_github_pages()
 
