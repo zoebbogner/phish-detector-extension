@@ -14,10 +14,11 @@ from faker import Faker
 
 from utils.data.constants import (
     WIKIPEDIA_SEED_PAGES, GITHUB_PAGES, BENIGN_CSV, TRANCOLIST_URL,
-    WIKIPEDIA_BASE_URL
+    WIKIPEDIA_BASE_URL, REQUIRED_COLUMNS
 )
 from utils.data.url_synthetic_templates import PATH_EXTENSIONS, QUERY_PARAM_TEMPLATES, enrich_tranco_domains
 from utils.data.data_helpers import ensure_data_dir, build_benign_df, save_to_csv
+
 
 
 def fetch_tranco_urls(top_n: int = 100000) -> Optional[pd.DataFrame]:
@@ -131,10 +132,17 @@ def main() -> tuple[Optional[str], Optional[pd.DataFrame]]:
     all_benign = all_benign.drop_duplicates(subset=["url"])
     # Filter only valid https URLs
     all_benign = all_benign[all_benign["url"].str.startswith("https://")].copy()
+    if not validate_df(all_benign, REQUIRED_COLUMNS):
+        print("[ERROR] Final DataFrame missing required columns.")
+        return None, None
     saved_path = save_to_csv(all_benign, BENIGN_CSV)
     if saved_path:
         print(f"[INFO] Benign URLs saved to {saved_path}")
         print(f"[INFO] Total benign URLs collected: {len(all_benign)}")
+        # Per-source summary
+        source_counts = all_benign["source"].value_counts()
+        for source, count in source_counts.items():
+            print(f"[INFO] {source}: {count}")
     return saved_path, all_benign
 
 

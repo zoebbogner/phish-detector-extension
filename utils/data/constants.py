@@ -3,7 +3,7 @@ Constants for phishing URL fetching utilities.
 """
 from pathlib import Path
 
-REQUIRED_COLUMNS: list[str] = ["url", "label"]
+REQUIRED_COLUMNS: list[str] = ["url", "label", "source", "timestamp"]
 
 RAW_DATA_DIR: Path = Path('data/raw')
 OPENPHISH_URL: str = 'https://openphish.com/feed.txt'
