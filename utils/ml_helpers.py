@@ -11,6 +11,24 @@ import pandas as pd
 from xgboost import plot_importance as xgb_plot_importance
 
 
+def apply_temperature(probabilities, temperature=2.0):
+    """
+    Apply temperature scaling to a vector of probabilities.
+    Used during knowledge distillation to soften teacher outputs.
+
+    Args:
+        probabilities (array-like): Probabilities from teacher model (values between 0 and 1).
+        temperature (float): Temperature value (T > 1 softens more).
+
+    Returns:
+        np.ndarray: Softened probabilities.
+    """
+    probabilities = np.clip(probabilities, 1e-8, 1 - 1e-8)  # avoid log(0)
+    logits = np.log(probabilities / (1 - probabilities))
+    softened = 1 / (1 + np.exp(-logits / temperature))
+    return softened
+
+
 def cross_val_score_with_logging(model, X, y, cv: int = 5, scoring: str = "f1") -> np.ndarray:
     """
     Run cross-validation and print mean/std of the score.
