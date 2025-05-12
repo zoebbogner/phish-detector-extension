@@ -19,7 +19,6 @@ FEATURES = [
     "dot_count",
     "punycode_present",
     "port_present",
-    "num_uppercase",
     "longest_special_sequence"
 ]
 
@@ -29,6 +28,8 @@ STUDENT_MODEL_PATH = "models/url_model/logreg_student.pkl"
 EXPORT_JSON_PATH = "models/url_model/logreg_weights.json"
 FEATURE_IMPORTANCE_PATH = "models/url_model/feature_importance.png"
 CLASSIFICATION_REPORT_PATH = "models/url_model/classification_report.txt"
+STUDENT_REPORT_PATH = "models/url_model/student_classification_report.txt"
+LOGREG_MODEL_PATH = "models/url_model/logreg_student.pkl"
 
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
