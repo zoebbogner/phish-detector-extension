@@ -8,3 +8,4 @@ beautifulsoup4
 faker
 lxml
 matplotlib
+rapidfuzz
