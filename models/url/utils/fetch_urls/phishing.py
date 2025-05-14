@@ -5,9 +5,8 @@ Fetch phishing URLs from OpenPhish and PhishTank, save as CSVs with labels and m
 from typing import Optional
 import requests
 import pandas as pd
-from utils.data.constants import OPENPHISH_URL, OPENPHISH_CSV, PHISHTANK_CSV, REQUIRED_COLUMNS
-from utils.data.data_helpers import ensure_data_dir, build_phishing_df, validate_df, save_to_csv
-
+from models.url.utils.config import OPENPHISH_URL, OPENPHISH_CSV, PHISHTANK_CSV
+from models.url.utils.data_helpers import ensure_data_dir, build_phishing_df, save_to_csv
 
 def fetch_openphish() -> Optional[pd.DataFrame]:
     """Fetch phishing URLs from OpenPhish and return as a DataFrame."""
@@ -39,11 +38,11 @@ def fetch_phishtank() -> Optional[pd.DataFrame]:
         return None
 
 
-def main() -> None:
+def fetch_phishing_urls() -> None:
     """Main function to fetch and save phishing URLs from both sources."""
     ensure_data_dir()
     openphish_df = fetch_openphish()
-    if openphish_df is not None and validate_df(openphish_df, REQUIRED_COLUMNS):
+    if openphish_df is not None:
         openphish_path = save_to_csv(openphish_df, OPENPHISH_CSV)
         if openphish_path is not None:
             print(f"[INFO] OpenPhish saved to {openphish_path}")
@@ -51,7 +50,7 @@ def main() -> None:
         print("[ERROR] OpenPhish DataFrame failed validation and was not saved.")
 
     phishtank_df = fetch_phishtank()
-    if phishtank_df is not None and validate_df(phishtank_df, REQUIRED_COLUMNS):
+    if phishtank_df is not None:
         phishtank_path = save_to_csv(phishtank_df, PHISHTANK_CSV)
         if phishtank_path is not None:
             print(f"[INFO] PhishTank saved to {phishtank_path}")
@@ -69,4 +68,4 @@ def main() -> None:
     print(f"[INFO] Fetching complete. Total phishing URLs collected: {total}")
 
 if __name__ == "__main__":
-    main() 
+    fetch_phishing_urls() 

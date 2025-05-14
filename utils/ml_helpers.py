@@ -101,59 +101,13 @@ def load_and_preprocess_data(path: str, features: Sequence[str], label_col: str 
     initial_rows = len(df)
     df = df.dropna(subset=list(features) + [label_col])
     dropped = initial_rows - len(df)
+    missing_cols = set(features + [label_col]) - set(df.columns)
+    if missing_cols:
+        print(f"[ERROR] Missing columns in CSV: {missing_cols}")
+    
     print(f"[INFO] Dropped {dropped} rows with missing values.")
     print("[INFO] Label distribution:")
     print(df[label_col].value_counts(normalize=True))
     X = df[list(features)]
     y = df[label_col]
     return X, y 
-
-
-def should_check_levenshtein(domain: str) -> bool:
-    """
-    Determine whether a domain warrants Levenshtein similarity checks.
-    This avoids unnecessary computation on clearly benign domains.
-
-    Args:
-        domain (str): The full domain name (e.g. 'g00gle-paypal-login.com')
-
-    Returns:
-        bool: True if the domain looks suspicious and should be checked, else False.
-    """
-    domain = domain.lower()
-
-    # Extract main part of domain (e.g. 'g00gle' from 'g00gle.com')
-    parts = domain.split('.')
-    if len(parts) < 2:
-        return False
-    domain_main = parts[-2]
-
-    # Quick filters for very short domains (e.g. 'x1.io')
-    if len(domain_main) <= 3:
-        return False
-
-    # Heuristic 1: suspicious phishing-related keywords
-    suspicious_keywords = [
-        "login", "signin", "secure", "account", "verify", "update", "reset",
-        "paypal", "google", "apple", "amazon", "bank", "webscr"
-    ]
-    if any(keyword in domain_main for keyword in suspicious_keywords):
-        return True
-
-    # Heuristic 2: has digits (e.g. 'g00gle', 'f4ceb00k')
-    if any(char.isdigit() for char in domain_main):
-        return True
-
-    # Heuristic 3: leetspeak or special substitution characters
-    if re.search(r'[01$@!]', domain_main):
-        return True
-
-    # Heuristic 4: multiple repeated characters (e.g. 'g0oo0gle')
-    if re.search(r'(.)\1{2,}', domain_main):
-        return True
-
-    # Heuristic 5: dash-separated suspicious words (e.g. 'paypal-login')
-    if any(word in domain_main for word in suspicious_keywords) and '-' in domain_main:
-        return True
-
-    return False
