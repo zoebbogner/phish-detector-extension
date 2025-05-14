@@ -4,7 +4,7 @@ DataFrame construction, validation, and saving.
 """
 from typing import Optional
 import pandas as pd
-from utils.data.constants import RAW_DATA_DIR
+from models.url.utils.config import RAW_DATA_DIR
 
 
 def ensure_data_dir() -> None:

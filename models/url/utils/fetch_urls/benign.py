@@ -12,12 +12,14 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from faker import Faker
 
-from utils.data.constants import (
+from models.url.utils.config import (
     WIKIPEDIA_SEED_PAGES, GITHUB_PAGES, BENIGN_CSV, TRANCOLIST_URL,
-    WIKIPEDIA_BASE_URL
+    WIKIPEDIA_BASE_URL, TRANCO_TOP_N
 )
-from utils.data.url_synthetic_templates import PATH_EXTENSIONS, QUERY_PARAM_TEMPLATES, enrich_tranco_domains
-from utils.data.data_helpers import ensure_data_dir, build_benign_df, save_to_csv
+from models.url.utils.fetch_urls.synthetic_templates import (
+    PATH_EXTENSIONS, QUERY_PARAM_TEMPLATES, enrich_tranco_domains
+)
+from models.url.utils.data_helpers import ensure_data_dir, build_benign_df, save_to_csv
 
 
 
@@ -102,14 +104,14 @@ def generate_synthetic_benign_urls(n: int = 20000, seed: int = 42) -> list[str]:
     return urls
 
 
-def main() -> tuple[Optional[str], Optional[pd.DataFrame]]:
+def fetch_benign_urls() -> tuple[Optional[str], Optional[pd.DataFrame]]:
     """Main function to fetch and save benign URLs from all sources."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--include-synthetic", action="store_true", help="Include synthetic benign URLs")
     args = parser.parse_args()
 
     ensure_data_dir()
-    tranco_df = fetch_tranco_urls(top_n=1000000)
+    tranco_df = fetch_tranco_urls(top_n=TRANCO_TOP_N)
     wikipedia_df = fetch_wikipedia_urls(max_links_per_page=50)
     github_df = fetch_github_pages()
 
@@ -117,7 +119,7 @@ def main() -> tuple[Optional[str], Optional[pd.DataFrame]]:
 
     # Synthetic URLs
     if args.include_synthetic:
-        synthetic_urls = generate_synthetic_benign_urls(n=100000)
+        synthetic_urls = generate_synthetic_benign_urls(n=TRANCO_TOP_N)
         synthetic_df = pd.DataFrame({
             "url": [u for u in synthetic_urls if u.startswith("https://")],
             "label": 0,
@@ -141,4 +143,4 @@ def main() -> tuple[Optional[str], Optional[pd.DataFrame]]:
 
 
 if __name__ == "__main__":
-    main() 
+    fetch_benign_urls() 

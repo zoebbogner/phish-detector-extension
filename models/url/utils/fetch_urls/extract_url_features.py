@@ -4,11 +4,11 @@ Extract URL features from raw CSVs and save a combined feature set for model tra
 """
 import os
 import pandas as pd
-from utils.data.URL_feature_extractor import URLFeatureExtractor
-from utils.data.constants import RAW_DIR, PROCESSED_PATH, RAW_FILES
+from models.url.utils.feature_extractor import URLFeatureExtractor
+from models.url.utils.config import RAW_DIR, PROCESSED_PATH, RAW_FILES
 
 
-def main():
+def extract_url_features():
     """Extract features from raw URL CSVs and save a combined feature set for training."""
     all_dfs = []
     extractor = URLFeatureExtractor()
@@ -25,7 +25,7 @@ def main():
             continue
         try:
             features = extractor.transform(df["url"])
-            features_df = pd.DataFrame(features, columns=extractor.feature_names)
+            features_df = features
             features_df["label"] = df["label"].values
             all_dfs.append(features_df)
             print(f"[INFO] Extracted features from {fname} ({len(df)} rows)")
@@ -43,4 +43,4 @@ def main():
         print(f"[ERROR] Could not save feature set: {e}")
 
 if __name__ == "__main__":
-    main() 
+    extract_url_features() 
