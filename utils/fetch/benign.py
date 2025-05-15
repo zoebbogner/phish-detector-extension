@@ -29,7 +29,7 @@ def enrich_tranco_domains(domains: list[str], n_paths_per_domain: int = 1) -> li
         for _ in range(n_paths_per_domain):
             # With 5-10% probability, keep as plain domain
             if random.random() < plain_ratio:
-                urls.append(f"https://{domain}")
+                urls.append(f"{domain}")
                 continue
             # Random path: either from template or random segments
             if random.random() < 0.5:
@@ -48,7 +48,7 @@ def enrich_tranco_domains(domains: list[str], n_paths_per_domain: int = 1) -> li
                 query = re.sub(r"session=[^&]+", f"session={faker.uuid4()[:8]}", query)
             else:
                 query = ""
-            url = f"https://{domain}{path}{query}"
+            url = f"{domain}{path}{query}"
             urls.append(url)
     return urls 
 
