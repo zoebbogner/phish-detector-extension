@@ -40,33 +40,10 @@ FEATURES = [
     'uncommon_tld', 'url_token_count',
 ]
 
-# === Data Source Constants ===
-REQUIRED_COLUMNS: list[str] = ["url", "label"]
-OPENPHISH_URL: str = 'https://openphish.com/feed.txt'
-PHISHTANK_URL: str = 'http://data.phishtank.com/data/online-valid.csv'
-OPENPHISH_CSV: str = 'openphish.csv'
-PHISHTANK_CSV: str = 'phishtank.csv'
-WIKIPEDIA_BASE_URL: str = "https://en.wikipedia.org/wiki/"
-WIKIPEDIA_SEED_PAGES: list[str] = [
-    "Python_(programming_language)",
-    "Artificial_intelligence",
-    "Machine_learning",
-    "Data_science",
-    "Internet",
-    "World_Wide_Web",
-    "Computer_science",
-    "Open_source",
-    "GitHub",
-    "Wikipedia"
-]
-GITHUB_PAGES: list[str] = [
-    "https://github.com/",
-    "https://pages.github.com/",
-    "https://github.blog/",
-    "https://education.github.com/",
-    "https://github.com/features/pages"
-]
-TRANCOLIST_URL: str = "https://tranco-list.eu/top-1m.csv.zip"
-TRANCO_TOP_N: int = 1000000
-# === Data Processing ===
-RAW_FILES = ["openphish.csv", "phishtank.csv", "benign_urls.csv"]
+def get_benign_csv_path(synthetic_urls: bool = False) -> str:
+    """Get the path to the benign CSV file based on synthetic URLs flag."""
+    if synthetic_urls:
+        return Path(RAW_DATA_DIR, 'synthetic', BENIGN_CSV)
+    else:
+        return Path(RAW_DATA_DIR, BENIGN_CSV)
+

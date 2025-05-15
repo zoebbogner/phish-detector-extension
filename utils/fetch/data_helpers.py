@@ -3,6 +3,7 @@ Helper functions for phishing data processing: directory management,
 DataFrame construction, validation, and saving.
 """
 from typing import Optional
+from pathlib import Path
 import pandas as pd
 from models.url.utils.config import RAW_DATA_DIR
 
@@ -34,10 +35,15 @@ def build_benign_df(urls, source_name: str) -> pd.DataFrame:
     """Build a benign DataFrame with required columns and UTC ISO timestamp. Deduplicate URLs."""
     return build_df(urls, source_name, 0)
 
-def save_to_csv(df: Optional[pd.DataFrame], filename: str) -> Optional[str]:
-    """Save DataFrame to CSV in the raw data directory. Return saved path if successful, else None."""
+def save_to_csv(df: Optional[pd.DataFrame], filename: str, path: Optional[Path] = None) -> Optional[str]:
+    """Save DataFrame to CSV in the raw data directory. Return saved path if successful, else None.
+    If path is provided, save to that path, otherwise save to the raw data directory.
+    """
     if df is not None and not df.empty:
-        path = RAW_DATA_DIR / filename
+        if path is None:
+            path = RAW_DATA_DIR / filename
+        else:
+            path = Path(path) / filename
         df.to_csv(path, index=False)
         print(f"[INFO] Saved {len(df)} records to {path}")
         return path
