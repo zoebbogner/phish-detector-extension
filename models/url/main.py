@@ -3,16 +3,16 @@ Extract features from raw URLs, train the teacher and student models, and evalua
 """
 import time, argparse
 from models.url.model import train_model_for_training, train_model_for_production
-from models.url.utils.fetch_urls.extract_url_features import extract_url_features
-from models.url.utils.fetch_urls.fetch import fetch_urls
+from models.url.utils.extract_features import extract_features
+from utils.fetch.fetch import fetch_all_urls
 
 def fetch_and_extract_features():
     """
     Fetch URLs, extract features, and save to disk.
     """
-    fetch_urls()
+    fetch_all_urls(synthetic_urls=True)
     start_time = time.time()
-    extract_url_features()
+    extract_features(use_synthetic=True)
     end_time = time.time()
     print(f"[INFO] Extracted features in {end_time - start_time} seconds")
     print(f"[INFO] Each url took {(end_time - start_time) / 1061131} seconds")
@@ -38,21 +38,15 @@ def production():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--fetch", action="store_true", help="Fetch URLs and extract features")
-    parser.add_argument("--train", action="store_true", help="Train the model")
-    parser.add_argument("--production", action="store_true", help="Train the model for production")
     args = parser.parse_args()
 
     if args.fetch:
         fetch_and_extract_features()
-    if args.train:
-        training()
-    if args.production:
-        production()
+        
+    training()
+    production()
     
-    if not args.fetch and not args.train and not args.production:
-        fetch_and_extract_features()
-        training()
-        production()
+    
     
     
 

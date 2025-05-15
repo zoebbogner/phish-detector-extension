@@ -5,28 +5,11 @@ import math
 from urllib.parse import urlparse
 import pandas as pd
 import rapidfuzz.distance.Levenshtein as rlev
+from models.url.config import COMMON_TLDS, COUNTRY_TLDS, BRAND_LIST, REDIRECT_KEYS
 class URLFeatureExtractor:
     """
     Vectorized URL feature extractor using pandas.
     Returns a pandas DataFrame with column names for better model pipeline integration.
-    Features:
-      - url_length
-      - path_depth
-      - num_subdomains
-      - num_special_chars
-      - num_digits
-      - num_hyphens
-      - has_at_symbol
-      - query_length
-      - num_query_params
-      - digit_ratio
-      - url_entropy
-      - has_https
-      - tld_type (one-hot encoded)
-      - levenshtein_to_brand
-      - uncommon_tld
-      - url_token_count
-      - avg_token_length
     """
     def __init__(self):
         self._special_re = re.compile(r'[^A-Za-z0-9]')
@@ -38,35 +21,12 @@ class URLFeatureExtractor:
             re.IGNORECASE
         )
         self._uppercase_re = re.compile(r'[A-Z]')
-        self._redirect_keys = ["redirect", "next", "url", "dest", "destination", "continue"]
+        self._redirect_keys = REDIRECT_KEYS
         self._redirect_pattern = re.compile(r'(redirect|next|url|dest|destination|continue)=', re.IGNORECASE)
         self._token_split_re = re.compile(r'[\/-_?=&]')
-        self._common_tlds = {"com", "org", "net", "edu", "gov", "info", "io", "co"}
-        self._country_tlds = {
-            "uk", "de", "fr", "cn", "ru", "jp", "br", "in", "au", "ca", "us", "es", "it",
-            "nl", "se", "no", "fi", "pl", "tr", "ch", "be", "at", "dk", "kr", "mx", "ar",
-            "za", "gr", "pt", "cz", "hu", "ro", "il", "nz", "ie", "sg", "hk", "id", "my",
-            "th", "ph", "vn", "sa", "ae", "ir", "eg", "pk", "bd", "ua", "by", "kz", "sk",
-            "bg", "lt", "lv", "ee", "si", "hr", "rs", "cl", "co", "pe", "ve", "ec", "uy",
-            "bo", "py", "do", "cr", "gt", "hn", "ni", "sv", "pa", "cu", "pr", "jm", "tt",
-            "bs", "bb", "ag", "lc", "gd", "kn", "vc", "dm", "ai", "bm", "ky", "ms", "tc",
-            "vg", "vi", "mq", "gp", "re", "yt", "pm", "wf", "pf", "nc", "tf", "bl", "mf",
-            "sx", "cw", "bq", "aw", "sr", "gy", "fk", "gs", "aq", "bv", "hm", "io", "sh",
-            "ac", "pn", "tk", "to", "tv", "ws", "as", "ck", "nu", "sb", "tl", "fm", "mh",
-            "nr", "pw", "ki", "cc", "cx", "nf", "um", "mp", "gu", "vu"
-        }
-        self._brand_list = [
-            "google", "facebook", "apple", "amazon", "microsoft", "paypal", "bank", "yahoo",
-            "instagram", "linkedin", "twitter", "github", "dropbox", "adobe", "netflix",
-            "whatsapp", "tiktok", "snapchat", "reddit", "ebay", "wellsfargo", "chase", "boa",
-            "hsbc", "citi", "capitalone", "americanexpress", "discover", "samsung", "icloud",
-            "outlook", "office", "mail", "gmail", "hotmail", "aol", "yandex", "baidu", "alibaba",
-            "jd", "weibo", "wechat", "taobao", "tmall", "bing", "duckduckgo", "yahoo", "live",
-            "skype", "slack", "zoom", "airbnb", "booking", "expedia", "uber", "lyft", "doordash",
-            "grubhub", "stripe", "square", "venmo", "coinbase", "binance", "kraken", "robinhood",
-            "etrade", "fidelity", "vanguard", "tdameritrade", "schwab", "sofi", "mint", "intuit",
-            "turbotax", "hulu", "spotify", "pandora", "soundcloud", "imdb", "pinterest", "quora",
-            "tumblr", "wordpress", "blogger", "medium", "wikipedia", "wikimedia"]
+        self._common_tlds = COMMON_TLDS
+        self._country_tlds = COUNTRY_TLDS
+        self._brand_list = BRAND_LIST
         
         self.feature_names = []
         

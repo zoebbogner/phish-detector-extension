@@ -5,9 +5,12 @@ import time
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
-from models.url.utils.config import (
-    FEATURES, RAW_DATA_PATH, MODEL_PATH, TEST_SIZE,
-    RANDOM_STATE, FEATURE_IMPORTANCE_PATH, XGB_PARAMS,
+from models.url.config import (
+    FEATURES, TEST_SIZE,
+    RANDOM_STATE, XGB_PARAMS
+)
+from main_config import (
+    PROCESSED_PATH, MODEL_PATH, FEATURE_IMPORTANCE_PATH,
     CLASSIFICATION_REPORT_PATH, PRODUCTION_PATH
 )
 from utils.ml_helpers import (
@@ -18,7 +21,7 @@ from utils.ml_helpers import (
 def train_model_for_training():
     """Train and evaluate an XGBoost model for phishing URL detection."""
     # ---- Load Data ----
-    x, y = load_and_preprocess_data(RAW_DATA_PATH, FEATURES, label_col="label")
+    x, y = load_and_preprocess_data(PROCESSED_PATH, FEATURES, label_col="label")
     print(f"[INFO] Loaded data with shape: {x.shape}")
 
     # ---- Cross-Validation ----
@@ -63,7 +66,7 @@ def train_model_for_training():
 def train_model_for_production():
     """Train an XGBoost model for phishing URL detection on all available data and save for production deployment."""
     # ---- Load all data ----
-    x, y = load_and_preprocess_data(RAW_DATA_PATH, FEATURES, label_col="label")
+    x, y = load_and_preprocess_data(PROCESSED_PATH, FEATURES, label_col="label")
     print(f"[INFO] Loaded full data with shape: {x.shape}")
 
     # ---- Train on all data ----
