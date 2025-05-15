@@ -38,8 +38,6 @@ def copy_to_single_csv(synthetic_urls: bool = False) -> None:
     combined.to_csv(output_path, index=False)
     print(f"[INFO] Combined CSV saved to {output_path} with {len(combined)} unique URLs")
             
-    print(f"[INFO] Copied all URLs to {RAW_DIR}/{ALL_URLS_CSV}")
-
 def fetch_all_urls(synthetic_urls: bool = False, n_paths_per_domain: int = 1) -> None:
     """Fetch all URLs from all sources (raw, no enrichment).
     If synthetic_urls is True, the URLs will be enriched with realistic paths and queries.
@@ -47,5 +45,6 @@ def fetch_all_urls(synthetic_urls: bool = False, n_paths_per_domain: int = 1) ->
     fetch_benign_urls(synthetic_urls, n_paths_per_domain)
     fetch_phishing_urls()
     copy_to_single_csv(synthetic_urls)
+    
 if __name__ == "__main__":
     fetch_all_urls(synthetic_urls=False, n_paths_per_domain=1)
