@@ -1,13 +1,15 @@
 """
 Fetch URLs from various sources and return as lists of URLs (raw).
 """
-from typing import List, Optional
-import io, requests, zipfile, pandas as pd, csv
 from typing import List
+import io 
+import zipfile
+import requests 
+import pandas as pd
 from bs4 import BeautifulSoup
 from utils.fetch.config import (
     TRANCOLIST_URL, TRANCO_TOP_N, WIKIPEDIA_SEED_PAGES, WIKIPEDIA_BASE_URL, GITHUB_PAGES,
-    OPENPHISH_URL, PHISHTANK_URL, URLHAUS_CSV_URL
+    OPENPHISH_URL, PHISHTANK_URL
 )
 from utils.fetch.session import get
 
@@ -65,31 +67,6 @@ def fetch_openphish_urls() -> List[str]:
         return urls
     except (requests.RequestException, FileNotFoundError) as e:
         print(f"[ERROR] Failed to fetch from OpenPhish: {e}")
-        return []
-    
-def fetch_urlhaus_urls(limit: Optional[int] = None) -> List[str]:
-    
-
-    print("[INFO] Fetching URLHaus phishing URLs...")
-
-    try:
-        resp = get(URLHAUS_CSV_URL)
-        resp.raise_for_status()
-        lines = resp.text.splitlines()
-
-        urls = []
-        lines = [line for line in lines if not line.startswith("#")]
-        reader = csv.reader(lines)
-        for row in reader:
-            if row and not row[0].startswith("#") and len(row) > 2:
-                urls.append(row[2])  # URL is in column index 2
-                if limit and len(urls) >= limit:
-                    break
-
-        print(f"[INFO] Retrieved {len(urls)} URLs from URLHaus.")
-        return urls
-    except (requests.RequestException, csv.Error, FileNotFoundError) as e:
-        print(f"[ERROR] Failed to fetch from URLHaus: {e}")
         return []
 
 def fetch_phishtank_urls() -> List[str]:
