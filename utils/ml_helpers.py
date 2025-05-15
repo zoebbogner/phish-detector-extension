@@ -1,6 +1,7 @@
 """
 General-purpose machine learning utility functions for model training, evaluation, and analysis.
 """
+import os
 from typing import Sequence, Optional
 import numpy as np
 from sklearn.model_selection import cross_val_score
@@ -58,6 +59,9 @@ def save_classification_report(report: str, path: str, encoding: Optional[str] =
     """
     Save a classification report string to a file with specified encoding.
     """
+    # Create the directory if it doesn't exist
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    
     with open(path, "w", encoding=encoding) as f:
         f.write(report)
     print(f"[INFO] Classification report saved to {path}")
@@ -87,6 +91,7 @@ def save_model(model, path: str) -> None:
     """
     Save a model to disk using joblib.
     """
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     joblib.dump(model, path)
     print(f"[INFO] Model saved to {path}")
 
