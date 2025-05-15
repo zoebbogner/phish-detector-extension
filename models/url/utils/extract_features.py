@@ -5,7 +5,9 @@ Extract URL features from combined CSVs and save a feature set for model trainin
 import os
 import pandas as pd
 from models.url.utils.feature_extractor import URLFeatureExtractor
-from main_config import RAW_DIR, PROCESSED_PATH, ALL_URLS_CSV, SYNTHETIC_ALL_URLS_CSV
+from models.url.config import PROCESSED_PATH
+from main_config import RAW_DIR, ALL_URLS_CSV, SYNTHETIC_ALL_URLS_CSV
+
 
 def extract_features(use_synthetic: bool = True):
     """Extract features from the combined all_urls.csv or synthetic_all_urls.csv and save for training."""

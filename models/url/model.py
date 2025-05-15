@@ -9,8 +9,8 @@ from models.url.config import (
     FEATURES, TEST_SIZE,
     RANDOM_STATE, XGB_PARAMS
 )
-from main_config import (
-    PROCESSED_PATH, MODEL_PATH, FEATURE_IMPORTANCE_PATH,
+from models.url.config import (
+    PROCESSED_PATH, TRAINING_MODEL_PATH, FEATURE_IMPORTANCE_PATH,
     CLASSIFICATION_REPORT_PATH, PRODUCTION_PATH
 )
 from utils.ml_helpers import (
@@ -59,8 +59,8 @@ def train_model_for_training():
     plot_feature_importance(model, FEATURE_IMPORTANCE_PATH)
 
     # ---- Save Model ----
-    save_model(model, MODEL_PATH)
-    print(f"[INFO] Model saved to {MODEL_PATH}")
+    save_model(model, TRAINING_MODEL_PATH)
+    print(f"[INFO] Model saved to {TRAINING_MODEL_PATH}")
     print("[INFO] Done.")
 
 def train_model_for_production():

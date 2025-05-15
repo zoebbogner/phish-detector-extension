@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 import pandas as pd
 import rapidfuzz.distance.Levenshtein as rlev
 from models.url.config import COMMON_TLDS, COUNTRY_TLDS, BRAND_LIST, REDIRECT_KEYS
+
 class URLFeatureExtractor:
     """
     Vectorized URL feature extractor using pandas.

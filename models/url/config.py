@@ -1,5 +1,13 @@
 # Configuration for URL model training and deployment
 
+# === File Paths ===
+TRAINING_MODEL_PATH = "models/url/results/model.pkl"
+EXPORT_JSON_PATH = "models/url/results/logreg_weights.json"
+FEATURE_IMPORTANCE_PATH = "models/url/results/feature_importance.png"
+CLASSIFICATION_REPORT_PATH = "models/url/results/classification_report.txt"
+PRODUCTION_PATH = "models/url/production/url_model.pkl"
+PROCESSED_PATH = "data/processed/url_features.csv"
+
 # === Model & Training Hyperparameters ===
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
