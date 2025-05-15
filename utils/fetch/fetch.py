@@ -11,4 +11,4 @@ def fetch_all_urls(synthetic_urls: bool = False, n_paths_per_domain: int = 1) ->
     fetch_phishing_urls()
 
 if __name__ == "__main__":
-    fetch_all_urls(synthetic_urls=True, n_paths_per_domain=1)
+    fetch_all_urls(synthetic_urls=False, n_paths_per_domain=1)

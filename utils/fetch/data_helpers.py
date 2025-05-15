@@ -5,16 +5,17 @@ DataFrame construction, validation, and saving.
 from typing import Optional
 from pathlib import Path
 import pandas as pd
-from models.url.utils.config import RAW_DATA_DIR
+from main_config import RAW_DATA_DIR
 
 
 def ensure_data_dir() -> None:
     """Ensure the raw data directory exists."""
-    if not RAW_DATA_DIR.exists():
-        print(f"[INFO] Creating directory: {RAW_DATA_DIR}")
-        RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    dir_path = Path(RAW_DATA_DIR)
+    if not dir_path.exists():
+        print(f"[INFO] Creating directory: {dir_path}")
+        dir_path.mkdir(parents=True, exist_ok=True)
     else:
-        print(f"[INFO] Directory already exists: {RAW_DATA_DIR}")
+        print(f"[INFO] Directory already exists: {dir_path}")
 
 def build_df(urls, source_name: str, label: int) -> pd.DataFrame:
     """Build a DataFrame with required columns and UTC ISO timestamp. Deduplicate URLs."""
@@ -41,7 +42,7 @@ def save_to_csv(df: Optional[pd.DataFrame], filename: str, path: Optional[Path] 
     """
     if df is not None and not df.empty:
         if path is None:
-            path = RAW_DATA_DIR / filename
+            path = Path(RAW_DATA_DIR) / filename
         else:
             path = Path(path) / filename
         df.to_csv(path, index=False)

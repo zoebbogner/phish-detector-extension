@@ -1,7 +1,6 @@
 """
 General-purpose machine learning utility functions for model training, evaluation, and analysis.
 """
-import re
 from typing import Sequence, Optional
 import numpy as np
 from sklearn.model_selection import cross_val_score

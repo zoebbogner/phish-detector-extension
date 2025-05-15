@@ -1,7 +1,5 @@
 """Configuration constants for URL fetching and processing utilities."""
 
-RAW_FILES = ["openphish.csv", "phishtank.csv", "benign_urls.csv"]
-
 # === URLs ===
 TRANCOLIST_URL = "https://tranco-list.eu/top-1m.csv.zip"
 OPENPHISH_URL = 'https://openphish.com/feed.txt'
@@ -29,15 +27,6 @@ GITHUB_PAGES = [
     "https://education.github.com/",
     "https://github.com/features/pages"
 ]
-
-# === Local Files ===
-BENIGN_CSV = "benign_urls.csv"
-PHISHING_CSV = "phishing_urls.csv"
-OPENPHISH_CSV = "openphish.csv"
-PHISHTANK_CSV = "phishtank.csv"
-RAW_FILES = [BENIGN_CSV, PHISHING_CSV, OPENPHISH_CSV, PHISHTANK_CSV]
-RAW_DATA_DIR = "data/raw"
-BENIGN_SYNTHETIC_PATH = "data/raw/synthetic"
 
 # === Synthetic URLs ===
 PATH_EXTENSIONS = [

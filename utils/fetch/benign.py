@@ -7,11 +7,14 @@ from typing import Optional
 from faker import Faker
 import pandas as pd
 from utils.fetch.config import (
-    TRANCO_TOP_N, BENIGN_CSV, PATH_EXTENSIONS, QUERY_PARAM_TEMPLATES,
-    SUSPICIOUS_BENIGN_KEYWORDS, BENIGN_SYNTHETIC_PATH
+    TRANCO_TOP_N, PATH_EXTENSIONS, QUERY_PARAM_TEMPLATES,
+    SUSPICIOUS_BENIGN_KEYWORDS
 )
 from utils.fetch.data_helpers import build_benign_df, save_to_csv, ensure_data_dir
-from utils.fetch.raw_url_fetchers import fetch_tranco_domains, fetch_wikipedia_urls, fetch_github_pages
+from utils.fetch.raw_url_fetchers import (
+    fetch_tranco_domains, fetch_wikipedia_urls, fetch_github_pages
+)
+from main_config import BENIGN_CSV, get_benign_csv_dir
 
 def enrich_tranco_domains(domains: list[str], n_paths_per_domain: int = 1) -> list[str]:
     """
@@ -53,6 +56,7 @@ def fetch_benign_urls(synthetic_urls: bool = False, n_paths_per_domain: int = 1)
     """Main function to fetch and save benign URLs from all sources (raw, no enrichment).
     If synthetic_urls is True, the URLs will be enriched with realistic paths and queries.
     """
+    print("[INFO] Fetching benign URLs...")
     ensure_data_dir()
     tranco_urls = fetch_tranco_domains(top_n=TRANCO_TOP_N)
     wikipedia_urls = fetch_wikipedia_urls(max_links_per_page=50)
@@ -61,8 +65,10 @@ def fetch_benign_urls(synthetic_urls: bool = False, n_paths_per_domain: int = 1)
     dfs = []
     if tranco_urls:
         if synthetic_urls:
+            print("[INFO] Enriching Tranco domains with realistic paths and queries...")
             tranco_urls = enrich_tranco_domains(tranco_urls, n_paths_per_domain)
             
+        print(f"[INFO] Tranco URLs: {len(tranco_urls)}")
         dfs.append(build_benign_df(tranco_urls, "Tranco"))
     if wikipedia_urls:
         dfs.append(build_benign_df(wikipedia_urls, "Wikipedia"))
@@ -72,13 +78,12 @@ def fetch_benign_urls(synthetic_urls: bool = False, n_paths_per_domain: int = 1)
     if not dfs:
         print("[ERROR] No benign URLs collected from any source.")
         return None, None
+    
     all_benign = pd.concat(dfs, ignore_index=True)
     all_benign = all_benign.drop_duplicates(subset=["url"])
     all_benign = all_benign[all_benign["url"].str.startswith("https://")].copy()
-    if synthetic_urls:
-        saved_path = save_to_csv(all_benign, BENIGN_CSV, path=BENIGN_SYNTHETIC_PATH)
-    else:
-        saved_path = save_to_csv(all_benign, BENIGN_CSV)
+    saved_path = save_to_csv(all_benign, BENIGN_CSV, path=get_benign_csv_dir(synthetic_urls=synthetic_urls))
+    
     if saved_path:
         print(f"[INFO] Benign URLs saved to {saved_path}")
         print(f"[INFO] Total benign URLs collected: {len(all_benign)}")

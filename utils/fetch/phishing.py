@@ -2,7 +2,7 @@
 Fetch phishing URLs from OpenPhish and PhishTank.
 """
 import pandas as pd
-from utils.fetch.config import OPENPHISH_CSV
+from main_config import OPENPHISH_CSV
 from utils.fetch.data_helpers import build_phishing_df, save_to_csv, ensure_data_dir
 from utils.fetch.raw_url_fetchers import fetch_openphish_urls, fetch_phishtank_urls
 
