@@ -12,7 +12,7 @@ from utils.fetch.config import (
 )
 from utils.fetch.data_helpers import build_benign_df, save_to_csv, ensure_data_dir
 from utils.fetch.raw_url_fetchers import (
-    fetch_tranco_domains, fetch_wikipedia_urls, fetch_github_pages
+    fetch_tranco_domains, fetch_wikipedia_urls, fetch_github_pages, fetch_wikimedia_urls
 )
 from main_config import BENIGN_CSV, get_benign_csv_dir
 
@@ -61,7 +61,8 @@ def fetch_benign_urls(synthetic_urls: bool = False, n_paths_per_domain: int = 1)
     tranco_urls = fetch_tranco_domains(top_n=TRANCO_TOP_N)
     wikipedia_urls = fetch_wikipedia_urls(max_links_per_page=50)
     github_urls = fetch_github_pages()
-
+    wikimedia_urls = fetch_wikimedia_urls()
+    print(f"[INFO] Wikimedia URLs: {len(wikimedia_urls)}")
     dfs = []
     if tranco_urls:
         if synthetic_urls:
@@ -74,14 +75,20 @@ def fetch_benign_urls(synthetic_urls: bool = False, n_paths_per_domain: int = 1)
         dfs.append(build_benign_df(wikipedia_urls, "Wikipedia"))
     if github_urls:
         dfs.append(build_benign_df(github_urls, "GitHub Pages"))
+    if wikimedia_urls:
+        dfs.append(build_benign_df(wikimedia_urls, "Wikimedia"))
+        
 
     if not dfs:
         print("[ERROR] No benign URLs collected from any source.")
         return None, None
     
     all_benign = pd.concat(dfs, ignore_index=True)
+    print(f"[INFO] Total benign URLs collected: {len(all_benign)}")
     all_benign = all_benign.drop_duplicates(subset=["url"])
+    print(f"[INFO] Total benign URLs after deduplication: {len(all_benign)}")
     all_benign = all_benign[all_benign["url"].str.startswith("https://")].copy()
+    print(f"[INFO] Total benign URLs after filtering: {len(all_benign)}")
     saved_path = save_to_csv(all_benign, BENIGN_CSV, path=get_benign_csv_dir(synthetic_urls=synthetic_urls))
     
     if saved_path:

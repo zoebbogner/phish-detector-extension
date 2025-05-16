@@ -9,7 +9,8 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from utils.fetch.config import (
     TRANCOLIST_URL, TRANCO_TOP_N, WIKIPEDIA_SEED_PAGES, WIKIPEDIA_BASE_URL, GITHUB_PAGES,
-    OPENPHISH_URL, PHISHTANK_URL
+    OPENPHISH_URL, PHISHTANK_URL, WIKIMEDIA_URL, WIKIMEDIA_CATEGORY_NAMES, WIKIMEDIA_LIMIT,
+    WIKIMEDIA_VALID_EXTENSIONS
 )
 from utils.fetch.session import get
 
@@ -29,6 +30,40 @@ def fetch_tranco_domains(top_n: int = TRANCO_TOP_N) -> List[str]:
     except (requests.RequestException, zipfile.BadZipFile, pd.errors.ParserError, FileNotFoundError) as e:
         print(f"[ERROR] Failed to fetch Tranco list: {e}")
         return []
+
+def fetch_wikimedia_urls() -> List[str]:
+    """Fetch Wikimedia URLs and return as a list of URLs (raw)."""
+    urls = []
+    
+    for category in WIKIMEDIA_CATEGORY_NAMES:
+        params = {
+            "action": "query",
+            "format": "json",
+            "generator": "categorymembers",
+            "gcmtitle": f"Category:{category}",
+            "gcmtype": "file",
+            "gcmlimit": WIKIMEDIA_LIMIT,
+            "prop": "imageinfo",
+            "iiprop": "url"
+        }
+        try:
+            resp = get(WIKIMEDIA_URL, params=params)
+            data = resp.json()
+            pages = data.get("query", {}).get("pages", {})
+            for page in pages.values():
+                # this is the structure: page["imageinfo"][0]["url"]
+                if ("imageinfo" in page and len(page["imageinfo"]) > 0 and
+                    "url" in page["imageinfo"][0]):
+                    
+                    url = page["imageinfo"][0]["url"]
+                    urls.append(url)
+                    
+        except (requests.RequestException, FileNotFoundError) as e:
+            print(f"[ERROR] Failed to fetch from Wikimedia: {e}")
+            continue
+    
+    print("[DEBUG] Found {} urls".format(len(urls)))
+    return list(dict.fromkeys(urls))
 
 def fetch_wikipedia_urls(max_links_per_page: int = 50) -> List[str]:
     """Fetch Wikipedia URLs from seed pages, extract up to max_links_per_page per page (raw URLs only)."""

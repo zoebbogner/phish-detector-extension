@@ -2,11 +2,15 @@
 
 # === URLs ===
 TRANCOLIST_URL = "https://tranco-list.eu/top-1m.csv.zip"
+WIKIMEDIA_URL = "https://commons.wikimedia.org/w/api.php"
 OPENPHISH_URL = 'https://openphish.com/feed.txt'
 PHISHTANK_URL = 'http://data.phishtank.com/data/online-valid.json'
 
 # === Data Processing ===
 TRANCO_TOP_N = 1000000
+WIKIMEDIA_CATEGORY_NAMES = ["PNG_files", "JPG_files", "SVG_files", "GIF_files"]
+WIKIMEDIA_VALID_EXTENSIONS = [".png", ".jpg", ".svg", ".gif"]
+WIKIMEDIA_LIMIT = 35
 WIKIPEDIA_SEED_PAGES = [
     "Python_(programming_language)",
     "Artificial_intelligence",
