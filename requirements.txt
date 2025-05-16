@@ -9,3 +9,4 @@ faker
 lxml
 matplotlib
 rapidfuzz
+tldextract
