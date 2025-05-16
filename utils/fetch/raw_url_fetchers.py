@@ -54,9 +54,12 @@ def fetch_wikimedia_urls() -> List[str]:
                 # this is the structure: page["imageinfo"][0]["url"]
                 if ("imageinfo" in page and len(page["imageinfo"]) > 0 and
                     "url" in page["imageinfo"][0]):
-                    
-                    url = page["imageinfo"][0]["url"]
-                    urls.append(url)
+                    if page["imageinfo"][0]["url"].lower().endswith(tuple(WIKIMEDIA_VALID_EXTENSIONS)):
+                        url = page["imageinfo"][0]["url"]
+                        urls.append(url)
+                    else:
+                        print("[DEBUG] url does not end with {}".format(WIKIMEDIA_VALID_EXTENSIONS))
+                        continue
                     
         except (requests.RequestException, FileNotFoundError) as e:
             print(f"[ERROR] Failed to fetch from Wikimedia: {e}")
