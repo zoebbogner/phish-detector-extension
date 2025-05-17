@@ -7,6 +7,7 @@ from utils.fetch.phishing import fetch_phishing_urls
 from main_config import (
     RAW_FILES,BENIGN_CSV,ALL_URLS_CSV, SYNTHETIC_ALL_URLS_CSV, RAW_DIR, get_benign_csv_dir
 )
+
 def copy_to_single_csv(synthetic_urls: bool = False) -> None:
     """Combine all raw URL CSVs into a single CSV file (with deduplication)."""
     dfs = []
@@ -42,8 +43,10 @@ def fetch_all_urls(synthetic_urls: bool = False, n_paths_per_domain: int = 1) ->
     """Fetch all URLs from all sources (raw, no enrichment).
     If synthetic_urls is True, the URLs will be enriched with realistic paths and queries.
     """
+
     fetch_benign_urls(synthetic_urls, n_paths_per_domain)
     fetch_phishing_urls()
+    
     copy_to_single_csv(synthetic_urls)
     
 if __name__ == "__main__":

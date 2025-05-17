@@ -12,7 +12,8 @@ from utils.fetch.config import (
 )
 from utils.fetch.data_helpers import build_benign_df, save_to_csv, ensure_data_dir
 from utils.fetch.raw_url_fetchers import (
-    fetch_tranco_domains, fetch_wikipedia_urls, fetch_github_pages, fetch_wikimedia_urls
+    fetch_tranco_domains, fetch_wikipedia_urls, fetch_github_pages,
+    fetch_wikimedia_urls
 )
 from main_config import BENIGN_CSV, get_benign_csv_dir
 
@@ -62,7 +63,7 @@ def fetch_benign_urls(synthetic_urls: bool = False, n_paths_per_domain: int = 1)
     wikipedia_urls = fetch_wikipedia_urls(max_links_per_page=50)
     github_urls = fetch_github_pages()
     wikimedia_urls = fetch_wikimedia_urls()
-    print(f"[INFO] Wikimedia URLs: {len(wikimedia_urls)}")
+    
     dfs = []
     if tranco_urls:
         if synthetic_urls:
@@ -78,7 +79,6 @@ def fetch_benign_urls(synthetic_urls: bool = False, n_paths_per_domain: int = 1)
     if wikimedia_urls:
         dfs.append(build_benign_df(wikimedia_urls, "Wikimedia"))
         
-
     if not dfs:
         print("[ERROR] No benign URLs collected from any source.")
         return None, None

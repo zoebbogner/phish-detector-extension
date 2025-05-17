@@ -1,41 +1,72 @@
+# utils/fetch/extract_from_json.py
+
 import os
-import pandas as pd
+import json
 from models.content.utils.feature_extractor import ContentFeatureExtractor
+from models.content.config import FEATURES, PROCESSED_PATH
 
-PROCESSED_PATH = "models/content/results/content_features.csv"  # Placeholder path
-RAW_DIR = "models/content/results"  # Placeholder path
-ALL_HTML_CSV = "all_html.csv"  # Placeholder file name
+JSON_PATH = "data/raw/hf/webs.json"  # standard .json file: list of {text, label}
 
-
-def extract_features():
+def load_json_array(path: str):
     """
-    Extract features from a CSV with 'html' and 'label' columns and save for training.
+    Load a full JSON array from file.
     """
+    with open(path, "r", encoding="utf-8") as f:
+        try:
+            data = json.load(f)
+            print(f"[INFO] Loaded {len(data)} entries.")
+            return data
+        except json.JSONDecodeError as e:
+            print(f"[ERROR] Could not parse JSON file: {e}")
+            return []
+
+def yield_batches(data, batch_size: int = 1000):
+    """
+    Yield data in batches of given size.
+    """
+    for i in range(0, len(data), batch_size):
+        yield data[i:i + batch_size]
+
+def extract_html_features(batch_size: int = 1000):
+    """
+    Extract HTML content features from a JSON array file and write them to a CSV in batches.
+    """
+    print(f"[INFO] Reading: {JSON_PATH}")
+    data = load_json_array(JSON_PATH)
+    if not data:
+        print("[ERROR] No valid data loaded.")
+        return
+
+    print(f"[INFO] Loaded {len(data)} entries. Processing in batches of {batch_size}.")
     extractor = ContentFeatureExtractor()
-    path = os.path.join(RAW_DIR, ALL_HTML_CSV)
-    print(f"[INFO] Loading {path}")
-    try:
-        df = pd.read_csv(path)
-    except (pd.errors.ParserError, FileNotFoundError) as e:
-        print(f"[ERROR] Could not read {path}: {e}")
-        return
+    first_write = True
 
-    if "html" not in df.columns or "label" not in df.columns:
-        print(f"[ERROR] {ALL_HTML_CSV} missing required columns. Exiting.")
-        return
+    for batch_idx, batch in enumerate(yield_batches(data, batch_size)):
+        print(f"[INFO] Processing batch {batch_idx + 1} ({len(batch)} items)")
 
-    try:
-        features = extractor.transform(df["html"])
-        features_df = features
-        features_df["label"] = df["label"].values
-        print(f"[INFO] Extracted features from {ALL_HTML_CSV} ({len(df)} rows)")
-    except (ValueError, KeyError, TypeError) as e:
-        print(f"[ERROR] Feature extraction failed for {ALL_HTML_CSV}: {e}")
-        return
+        html_list = [entry["text"] for entry in batch if "text" in entry and "label" in entry]
+        labels = [entry["label"] for entry in batch if "text" in entry and "label" in entry]
 
-    print(f"[INFO] Saving combined feature set to {PROCESSED_PATH} ({len(features_df)} rows)")
-    try:
-        features_df.to_csv(PROCESSED_PATH, index=False)
-        print("[INFO] Feature set saved successfully.")
-    except (OSError, PermissionError, pd.errors.EmptyDataError) as e:
-        print(f"[ERROR] Could not save feature set: {e}") 
+        if not html_list:
+            print(f"[WARN] Skipping batch {batch_idx + 1}: no valid entries")
+            continue
+
+        try:
+            features_df = extractor.transform_batch(html_list)
+            features_df = features_df[FEATURES]
+            features_df["label"] = labels
+
+            os.makedirs(os.path.dirname(PROCESSED_PATH), exist_ok=True)
+            features_df.to_csv(
+                PROCESSED_PATH, 
+                mode="w" if first_write else "a", 
+                index=False, 
+                header=first_write
+            )
+            print(f"[INFO] Saved batch {batch_idx + 1} ({len(batch)} entries)")
+            first_write = False
+        except (AttributeError, KeyError, ValueError, TypeError, OSError, PermissionError, ImportError) as e:
+            print(f"[ERROR] Failed to extract features from batch {batch_idx + 1}: {e}")
+
+if __name__ == "__main__":
+    extract_html_features()

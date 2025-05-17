@@ -1,5 +1,11 @@
 """Main configuration for file paths and data locations."""
+
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
 # === File and Directory Paths ===
 RAW_DIR = "data/raw"

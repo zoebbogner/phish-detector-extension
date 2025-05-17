@@ -5,6 +5,15 @@ TRANCOLIST_URL = "https://tranco-list.eu/top-1m.csv.zip"
 WIKIMEDIA_URL = "https://commons.wikimedia.org/w/api.php"
 OPENPHISH_URL = 'https://openphish.com/feed.txt'
 PHISHTANK_URL = 'http://data.phishtank.com/data/online-valid.json'
+COMMON_CRAWL_S3_PATHS = [
+    "https://data.commoncrawl.org/crawl-data/CC-MAIN-2025-05/segments/1736703362541.8/warc/CC-MAIN-20250120010617-20250120040617-00289.warc.gz",
+    "https://data.commoncrawl.org/crawl-data/CC-MAIN-2025-05/segments/1736703363113.38/warc/CC-MAIN-20250121070313-20250121100313-00165.warc.gz",
+    "https://data.commoncrawl.org/crawl-data/CC-MAIN-2025-05/segments/1736703361941.29/warc/CC-MAIN-20250126135402-20250126165402-00004.warc.gz",
+    "https://data.commoncrawl.org/crawl-data/CC-MAIN-2025-05/segments/1736703365567.50/warc/CC-MAIN-20250128103419-20250128133419-00210.warc.gz",
+]
+
+# === Output ===
+OUTPUT_CSV_GZ = "data/raw/labeled_crawl.csv.gz"
 
 # === Data Processing ===
 TRANCO_TOP_N = 1000000

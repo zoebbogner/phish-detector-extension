@@ -10,3 +10,8 @@ lxml
 matplotlib
 rapidfuzz
 tldextract
+warcio
+dotenv
+datasets
+huggingface_hub
+mysql-connector-python

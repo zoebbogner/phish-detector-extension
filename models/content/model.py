@@ -5,7 +5,7 @@ import time
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
-from models.url.config import (
+from models.content.config import (
     FEATURES, TEST_SIZE,
     RANDOM_STATE, XGB_PARAMS,
     PROCESSED_PATH, TRAINING_MODEL_PATH, FEATURE_IMPORTANCE_PATH,
@@ -13,7 +13,8 @@ from models.url.config import (
 )
 from utils.ml_helpers import (
     cross_val_score_with_logging, save_classification_report,
-    print_confusion_matrix, plot_feature_importance, save_model, load_and_preprocess_data
+    print_confusion_matrix, plot_feature_importance, save_model, load_and_preprocess_data,
+    print_top_n_feature_importance
 )
 
 def train_model_for_training():
@@ -46,6 +47,7 @@ def train_model_for_training():
 
     # ---- Confusion Matrix ----
     print_confusion_matrix(y_test, y_pred)
+
 
     # ---- Classification Report ----
     report = classification_report(y_test, y_pred, output_dict=False)
