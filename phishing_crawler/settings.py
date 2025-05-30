@@ -6,7 +6,7 @@ from models.content.config import FEATURES
 #############################
 # Logs
 #############################
-LOG_FILE = "crawl.log"
+LOG_FILE = "crawl_reversed.log"
 LOG_LEVEL = "WARNING"
 #############################
 # User agent
