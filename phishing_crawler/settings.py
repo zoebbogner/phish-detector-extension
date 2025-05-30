@@ -35,7 +35,7 @@ SPIDER_MODULES = ["phishing_crawler.spiders"]
 NEWSPIDER_MODULE = "phishing_crawler.spiders"
 
 # Which CSV columns to export, in order:
-SEEDS_CSV = 'phishing_crawler/seeds.csv'
+SEEDS_CSV = 'phishing_crawler/reversed.csv'
 FEED_EXPORT_FIELDS = FEATURES + ['label', 'url']
 FEED_EXPORT_ENCODING = "utf-8"
 
