@@ -15,3 +15,5 @@ dotenv
 datasets
 huggingface_hub
 mysql-connector-python
+scrapy
+setuptools
