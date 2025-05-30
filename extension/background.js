@@ -9,6 +9,7 @@ import XGBoostScorer from './utils/scorer.js';
 let urlScorer = null;
 let contentScorer = null;
 let metaScorer = null;
+const readyTabs = new Set();
 
 // Tab-scoped caches
 const metaScores = new Map(); // tabId -> metaScore
@@ -36,7 +37,7 @@ const contentScores = new Map(); // tabId -> { score, features }
 })();
 
 function maybeRunMetaModel(tabId) {
-    if (!urlScores.has(tabId) || !contentScores.has(tabId)) return;
+    if (!urlScores.has(tabId) || !contentScores.has(tabId) || !readyTabs.has(tabId)) return;
     const urlData = urlScores.get(tabId);
     const contentData = contentScores.get(tabId);
     // Use the exact keys your meta model expects
@@ -49,7 +50,32 @@ function maybeRunMetaModel(tabId) {
     console.log(`Meta model phishing score for ${urlData.url}:`, metaScore);
     const isPhishing = metaScore > 0.5;
     console.log(`Meta model decision for ${urlData.url}:`, isPhishing ? 'PHISHING' : 'BENIGN');
+    chrome.storage.session.set({
+        [String(tabId)]: {
+            score: metaScore,
+            decision: isPhishing
+        }
+    });
+    chrome.tabs.sendMessage(tabId, {
+        type: 'META_MODEL_RESULT',
+        score: metaScore,
+        decision: isPhishing
+    });
     
+    if (!isPhishing) return;
+    
+    // 1) set the badge so you see a red “!” (optional)
+    chrome.action.setBadgeText({ text: "!", tabId });
+    chrome.action.setBadgeBackgroundColor({ color: "red", tabId });
+
+    // 2) show a desktop notification
+    chrome.notifications.create({
+        type: "basic",
+        iconUrl: "icons/icon48.png",
+        title: "⚠️ Phishing Detected!",
+        message: `This page (${new URL(urlData.url).hostname}) looks malicious.`,
+        priority: 2
+    });
 }
 
 // Listen for committed navigations
@@ -57,6 +83,8 @@ chrome.webNavigation.onCommitted.addListener(({ url, frameId, tabId }) => {
     if (!urlScorer?.modelReady) return;
     if (frameId !== 0) return;
     if (!/^https?:/.test(url)) return;
+
+    readyTabs.delete(tabId);
 
     const feats = extractUrlFeatures(url);
     if (!feats) return;
@@ -69,6 +97,7 @@ chrome.webNavigation.onCommitted.addListener(({ url, frameId, tabId }) => {
     } catch (err) {
         console.error('Scoring failed:', err);
     }
+
 });
 
 // Listen for content features
@@ -84,3 +113,10 @@ chrome.runtime.onMessage.addListener((request, sender) => {
     maybeRunMetaModel(tabId);
 });
 
+
+chrome.runtime.onMessage.addListener((msg, { tab }) => {
+    if (msg.type === 'CONTENT_READY' && tab?.id != null) {
+        readyTabs.add(tab.id);
+        maybeRunMetaModel(tab.id);
+    }
+});
