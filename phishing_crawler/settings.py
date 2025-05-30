@@ -6,7 +6,7 @@ from models.content.config import FEATURES
 #############################
 # Logs
 #############################
-LOG_FILE = "crawl_reversed.log"
+LOG_FILE = "crawl.log"
 LOG_LEVEL = "WARNING"
 #############################
 # User agent
@@ -35,7 +35,7 @@ SPIDER_MODULES = ["phishing_crawler.spiders"]
 NEWSPIDER_MODULE = "phishing_crawler.spiders"
 
 # Which CSV columns to export, in order:
-SEEDS_CSV = 'phishing_crawler/reversed.csv'
+SEEDS_CSV = 'phishing_crawler/seeds.csv'
 FEED_EXPORT_FIELDS = FEATURES + ['label', 'url']
 FEED_EXPORT_ENCODING = "utf-8"
 
