@@ -23,7 +23,7 @@ TRAINING_MODEL_PATH = "models/content/results/model.pkl"
 EXPORT_JSON_PATH = "models/content/results/logreg_weights.json"
 FEATURE_IMPORTANCE_PATH = "models/content/results/feature_importance.png"
 CLASSIFICATION_REPORT_PATH = "models/content/results/classification_report.txt"
-PRODUCTION_PATH = "models/content/production/content_model.pkl"
+PRODUCTION_PATH = "extension/production/content_model.json"
 
 # === Google Safe Browsing ===
 GOOGLE_SAFEBROWSING_URL = "https://safebrowsing.googleapis.com/v4/threatMatches:find"
@@ -40,24 +40,24 @@ BENIGN_QUOTA = 1000000
 BENIGN_OUTPUT_CSV = "data/raw/benign_html.csv"
 HTML_CSV_FIELDNAMES = ["url", "html", "label"]
 
+# FEATURES = [
+#     "domain_mismatch_link_ratio",
+#     "external_domain_count",
+#     "password_field_count",
+#     "anchor_count",
+#     "favicon_domain_mismatch",
+#     "ad_network_asset_count",
+#     "script_count",
+#     "suspicious_keyword_count",
+#     "external_stylesheet_ratio",
+#     "text_to_html_ratio",
+#     "input_count",
+#     "non_https_resource_ratio",
+#     "redirect_pattern_count",
+#     "document_text_entropy",
+#     "title_length"
+# ]
 FEATURES = [
-    "domain_mismatch_link_ratio",
-    "external_domain_count",
-    "password_field_count",
-    "anchor_count",
-    "favicon_domain_mismatch",
-    "ad_network_asset_count",
-    "script_count",
-    "suspicious_keyword_count",
-    "external_stylesheet_ratio",
-    "text_to_html_ratio",
-    "input_count",
-    "non_https_resource_ratio",
-    "redirect_pattern_count",
-    "document_text_entropy",
-    "title_length"
-]
-OLD_FEATURES = [
     "html_tag_count",
     "form_count",
     "input_count",

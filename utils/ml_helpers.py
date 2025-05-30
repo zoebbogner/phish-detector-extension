@@ -2,6 +2,7 @@
 General-purpose machine learning utility functions for model training, evaluation, and analysis.
 """
 import os
+import json
 from typing import Sequence, Optional
 import numpy as np
 from sklearn.model_selection import cross_val_score
@@ -9,7 +10,7 @@ from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import joblib
 import pandas as pd
-from xgboost import plot_importance as xgb_plot_importance
+from xgboost import plot_importance as xgb_plot_importance, XGBClassifier
 
 
 def apply_temperature(probabilities, temperature=2.0):
@@ -87,14 +88,26 @@ def plot_feature_importance(model, path: str, importance_type: str = 'gain', fig
     print(f"[INFO] Feature importance plot saved to {path}")
 
 
-def save_model(model, path: str) -> None:
+def save_model_with_joblib(model, path: str) -> None:
     """
     Save a model to disk using joblib.
     """
     os.makedirs(os.path.dirname(path), exist_ok=True)
     joblib.dump(model, path)
     print(f"[INFO] Model saved to {path}")
-
+    
+def save_model_to_production_json(model : XGBClassifier, path: str) -> None:
+    """
+    Save a model to disk using booster.savemodel().
+    This is the recommended way to save a model for production deployment in chrome extension.
+    """
+    if not path.lower().endswith('.json'):
+        raise ValueError("Production model path should end in '.json'")
+    
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    booster = model.get_booster()
+    booster.save_model(path)
+    print(f"[INFO] Saved model to {path}")
 
 def load_and_preprocess_data(path: str, features: Sequence[str], label_col: str = "label") -> tuple[pd.DataFrame, pd.Series]:
     """

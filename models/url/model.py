@@ -13,12 +13,13 @@ from models.url.config import (
 )
 from utils.ml_helpers import (
     cross_val_score_with_logging, save_classification_report,
-    print_confusion_matrix, plot_feature_importance, save_model, load_and_preprocess_data
+    print_confusion_matrix, plot_feature_importance, load_and_preprocess_data,
+    save_model_with_joblib, save_model_to_production_json
 )
 
 def train_model_for_training():
     """Train and evaluate an XGBoost model for phishing URL detection."""
-    # ---- Load Data ----
+    # ---- Load Data from  ----
     x, y = load_and_preprocess_data(PROCESSED_PATH, FEATURES, label_col="label")
     print(f"[INFO] Loaded data with shape: {x.shape}")
 
@@ -57,7 +58,7 @@ def train_model_for_training():
     plot_feature_importance(model, FEATURE_IMPORTANCE_PATH)
 
     # ---- Save Model ----
-    save_model(model, TRAINING_MODEL_PATH)
+    save_model_with_joblib(model, TRAINING_MODEL_PATH)
     print(f"[INFO] Model saved to {TRAINING_MODEL_PATH}")
     print("[INFO] Done.")
 
@@ -73,5 +74,5 @@ def train_model_for_production():
     model.fit(x, y)
 
     # ---- Save production model ----
-    save_model(model, PRODUCTION_PATH)
+    save_model_to_production_json(model, PRODUCTION_PATH)
     print(f"[INFO] Production model saved to {PRODUCTION_PATH}")

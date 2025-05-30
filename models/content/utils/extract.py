@@ -32,7 +32,7 @@ def extract_html_features():
     ):
         start_time = time.time()
         print(f"[INFO] Processing batch {batch_idx + 1} ({len(batch)} items)")
-        features_df = extractor.transform_batch(batch)
+        features_df = extractor.transform_batch(batch)        
         end_time = time.time()
         print(f"[INFO] Time taken: {end_time - start_time} seconds")
         print(f"[INFO] Features extracted for {len(features_df)} items")

@@ -13,13 +13,17 @@ from models.content.config import (
 )
 from utils.ml_helpers import (
     cross_val_score_with_logging, save_classification_report,
-    print_confusion_matrix, plot_feature_importance, save_model, load_and_preprocess_data,
-    print_top_n_feature_importance
+    print_confusion_matrix, plot_feature_importance, load_and_preprocess_data,
+    print_top_n_feature_importance,
+    save_model_with_joblib, save_model_to_production_json
 )
 
 def train_model_for_training():
     """Train and evaluate an XGBoost model for phishing URL detection."""
     # ---- Load Data ----
+    print("[INFO] Loading data...")
+    print("PROCESSED_PATH", PROCESSED_PATH)
+    print("FEATURES", FEATURES)
     x, y = load_and_preprocess_data(PROCESSED_PATH, FEATURES, label_col="label")
     print(f"[INFO] Loaded data with shape: {x.shape}")
 
@@ -39,6 +43,9 @@ def train_model_for_training():
     model.fit(x_train, y_train, eval_set=[(x_test, y_test)], verbose=False)
     elapsed = time.time() - start_time
     print(f"[INFO] Training completed in {elapsed:.2f} seconds.")
+    
+    print_top_n_feature_importance(model.feature_importances_, FEATURES, n=26)
+    print("="*100)
 
     # ---- Evaluation ----
     y_pred = model.predict(x_test)
@@ -59,7 +66,7 @@ def train_model_for_training():
     plot_feature_importance(model, FEATURE_IMPORTANCE_PATH)
 
     # ---- Save Model ----
-    save_model(model, TRAINING_MODEL_PATH)
+    save_model_with_joblib(model, TRAINING_MODEL_PATH)
     print(f"[INFO] Model saved to {TRAINING_MODEL_PATH}")
     print("[INFO] Done.")
 
@@ -75,5 +82,5 @@ def train_model_for_production():
     model.fit(x, y)
 
     # ---- Save production model ----
-    save_model(model, PRODUCTION_PATH)
+    save_model_to_production_json(model, PRODUCTION_PATH)
     print(f"[INFO] Production model saved to {PRODUCTION_PATH}")
