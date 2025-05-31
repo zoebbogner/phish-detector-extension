@@ -2,12 +2,12 @@
 
 from models.content.config import FEATURES
 
-
+HTTPERROR_ALLOW_ALL = True
 #############################
 # Logs
 #############################
 LOG_FILE = "crawl.log"
-LOG_LEVEL = "WARNING"
+LOG_LEVEL = "INFO"
 #############################
 # User agent
 #############################
@@ -35,14 +35,14 @@ SPIDER_MODULES = ["phishing_crawler.spiders"]
 NEWSPIDER_MODULE = "phishing_crawler.spiders"
 
 # Which CSV columns to export, in order:
-SEEDS_CSV = 'phishing_crawler/seeds.csv'
+SEEDS_CSV = 'phishing_crawler/seeds_default.csv'
 FEED_EXPORT_FIELDS = FEATURES + ['label', 'url']
 FEED_EXPORT_ENCODING = "utf-8"
 
 #############################
 # Crawl Politeness Settings
 #############################
-
+DOWNLOADER_CLIENT_TLS_VERIFY = False
 
 # We’ll fetch robots.txt ourselves if needed, but we won’t let Scrapy auto‐obey it:
 ROBOTSTXT_OBEY = False
@@ -51,10 +51,10 @@ ROBOTSTXT_OBEY = False
 CONCURRENT_REQUESTS = 8
 
 # Limit concurrent requests per domain to avoid overloading any single host
-CONCURRENT_REQUESTS_PER_DOMAIN = 2
+CONCURRENT_REQUESTS_PER_DOMAIN = 1
 
 # Introduce a fixed delay (in seconds) between requests to the same domain
-DOWNLOAD_DELAY = 1.5
+DOWNLOAD_DELAY = 2.0
 
 # Enable AutoThrottle to dynamically adjust rate based on server response times
 AUTOTHROTTLE_ENABLED = True
@@ -66,6 +66,12 @@ AUTOTHROTTLE_MAX_DELAY = 10.0
 AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
 # Turn off debug logging for AutoThrottle (set to True to see throttling stats)
 AUTOTHROTTLE_DEBUG = False
+
+# Disable some built‐in extensions if you truly only want to see your own logging:
+EXTENSIONS = {
+    "scrapy.extensions.logstats.LogStats": None,
+    "scrapy.extensions.telnet.TelnetConsole": None,
+}
 
 #############################
 # Other Defaults (uncomment/customize as needed)

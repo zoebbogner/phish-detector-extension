@@ -1,7 +1,5 @@
 import csv
 import logging
-from urllib.parse import urlparse
-from urllib.robotparser import RobotFileParser
 
 import scrapy
 from models.content.utils.feature_helper import extract_html_features
@@ -9,71 +7,50 @@ from models.content.utils.feature_helper import extract_html_features
 
 class FeatureSpider(scrapy.Spider):
     name = "feature_spider"
-    custom_settings = {
-        # We’ll do robots.txt logic ourselves
-        "ROBOTSTXT_OBEY": False,
-    }
+    custom_settings = {"ROBOTSTXT_OBEY": False}
 
+    # Asynchronous start() that yields each Request from our old start_requests()
+    async def start(self):
+        for req in self.start_requests():
+            yield req
+
+    # Keep start_requests() as a normal (synchronous) generator of Request objects:
     def start_requests(self):
-        # Read your seeds.csv of URLs + labels
         with open(self.settings.get('SEEDS_CSV'), newline='') as f:
             reader = csv.DictReader(f)
             for row in reader:
                 url = row['url']
                 label = row.get('label', '')
-                # Kick off by checking robots.txt first
+
                 yield scrapy.Request(
-                    url=self._robots_url(url),
-                    callback=self._on_robots,
-                    errback=self._on_robots_error,
-                    meta={'seed_url': url, 'label': label}
+                    url=url,
+                    callback=self.parse,
+                    errback=self.on_fetch_error,
+                    meta={'label': label}
                 )
 
-    def _robots_url(self, page_url):
-        # Build the base robots.txt URL for that domain
-        parts = urlparse(page_url)
-        return f"{parts.scheme}://{parts.netloc}/robots.txt"
-
-    def _on_robots(self, response):
-        seed_url = response.meta['seed_url']
-        label = response.meta['label']
-
-        txt = response.text.strip()
-        status = response.status
-
-        # If no robots.txt (404/410) or it’s empty → allow crawling
-        if status in (404, 410) or not txt:
-            allowed = True
-        else:
-            # Otherwise parse and ask
-            rp = RobotFileParser()
-            rp.parse(txt.splitlines())
-            allowed = rp.can_fetch('*', seed_url)
-
-        if allowed:
-            yield scrapy.Request(
-                seed_url,
-                callback=self.parse,
-                meta={'label': label},
-            )
-        else:
-            logging.warning(f"Blocked by robots.txt, skipping {seed_url}")
-
-    def _on_robots_error(self, failure):
-        # Network error fetching robots.txt → treat as missing → allow
-        seed_url = failure.request.meta['seed_url']
-        label = failure.request.meta['label']
-        logging.info(f"Could not fetch robots.txt for {seed_url}, proceeding anyway")
-        yield scrapy.Request(
-            seed_url,
-            callback=self.parse,
-            meta={'label': label},
-        )
+    # ... rest of your spider (on_fetch_error(), parse(), etc.) ...
+    def on_fetch_error(self, failure):
+        url = failure.request.url
+        self.logger.error(f"❌ Fetch failed for {url}: {failure.value}")
 
     def parse(self, response):
-        label = response.meta['label']
-        feats = extract_html_features(response.text, response.url)
-        # Build your flat CSV row
+        label = response.meta.get('label', '')
+        if response.status != 200:
+            self.logger.warning(f"⚠️ Skipping {response.url} (status {response.status})")
+            return
+
+        content_type = response.headers.get('Content-Type', b"").decode('utf-8', errors='ignore')
+        if not content_type.lower().startswith('text/') and 'html' not in content_type.lower():
+            self.logger.warning(f"⚠️ Non‐HTML ({content_type}) at {response.url}")
+            return
+
+        try:
+            feats = extract_html_features(response.text, response.url)
+        except Exception as e:
+            self.logger.warning(f"⚠️ Error parsing {response.url}: {e}")
+            return
+
         row = {'label': label, 'url': response.url}
         row.update(feats)
         yield row
