@@ -174,16 +174,12 @@ function extractContentFeatures(root, url) {
   // Additional structural features
   const htmlLength = root.outerHTML ? root.outerHTML.length : 0;
   features["html_length"] = htmlLength;
-  features["script_to_html_ratio"] = htmlLength ? scriptSrcs.length / htmlLength : 0;
-  features["form_to_input_ratio"] = features["input_count"] ? features["form_count"] / features["input_count"] : 0;
-  features["unique_script_domains"] = uniqueScriptDomains.size;
 
   // Script text entropy
   let scriptText = '';
   for (const tag of scripts) {
     if (tag.textContent) scriptText += tag.textContent + ' ';
   }
-  features["script_text_entropy"] = shannonEntropyLRU(scriptText);
 
   // Content Ratios & Text Stats
   features["title_length"] = titleTag && titleTag.textContent ? titleTag.textContent.trim().length : 0;

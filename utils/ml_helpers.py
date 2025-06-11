@@ -113,7 +113,6 @@ def load_and_preprocess_data(path: str, features: Sequence[str], label_col: str 
     """
     Load a CSV, drop rows with missing values in features+label, and return (X, y).
     """
-    print(f"[INFO] Loading data from: {path}")
     df = pd.read_csv(path)
     initial_rows = len(df)
     df = df.dropna(subset=list(features) + [label_col])
@@ -122,9 +121,6 @@ def load_and_preprocess_data(path: str, features: Sequence[str], label_col: str 
     if missing_cols:
         print(f"[ERROR] Missing columns in CSV: {missing_cols}")
     
-    print(f"[INFO] Dropped {dropped} rows with missing values.")
-    print("[INFO] Label distribution:")
-    print(df[label_col].value_counts(normalize=True))
     X = df[list(features)]
     y = df[label_col]
     return X, y 

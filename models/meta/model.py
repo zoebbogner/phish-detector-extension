@@ -26,7 +26,7 @@ def train_meta_model_for_training():
     assert x_content.shape[0] == x_url.shape[0] == len(y), "Shape mismatch between base model outputs"
     meta_features = np.column_stack([
         content_model.predict_proba(x_content)[:, 1],
-        url_model.predict_proba(x_url)[:, 1]
+        url_model.predict_proba(x_url)[:, 1] * 4
     ])
     print(f"[INFO] Loaded meta features with shape: {meta_features.shape}")
 
@@ -52,7 +52,7 @@ def train_meta_model_for_training():
     acc = accuracy_score(y_test, y_pred)
     print(f"[INFO] Test accuracy: {acc:.4f}")
     print_confusion_matrix(y_test, y_pred)
-    report = classification_report(y_test, y_pred, output_dict=False)
+    report = classification_report(y_test, y_pred, output_dict=False, digits=2)
     print("[INFO] Classification report:")
     print(report)
     save_classification_report(report, CLASSIFICATION_REPORT_PATH)

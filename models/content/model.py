@@ -11,6 +11,7 @@ from models.content.config import (
     PROCESSED_PATH, TRAINING_MODEL_PATH, FEATURE_IMPORTANCE_PATH,
     CLASSIFICATION_REPORT_PATH, PRODUCTION_PATH
 )
+from models.content.utils.load_csv import load_all_csvs
 from utils.ml_helpers import (
     cross_val_score_with_logging, save_classification_report,
     print_confusion_matrix, plot_feature_importance, load_and_preprocess_data,
@@ -22,9 +23,7 @@ def train_model_for_training():
     """Train and evaluate an XGBoost model for phishing URL detection."""
     # ---- Load Data ----
     print("[INFO] Loading data...")
-    print("PROCESSED_PATH", PROCESSED_PATH)
-    print("FEATURES", FEATURES)
-    x, y = load_and_preprocess_data(PROCESSED_PATH, FEATURES, label_col="label")
+    x, y = load_all_csvs()
     print(f"[INFO] Loaded data with shape: {x.shape}")
 
     # ---- Cross-Validation ----
@@ -44,9 +43,6 @@ def train_model_for_training():
     elapsed = time.time() - start_time
     print(f"[INFO] Training completed in {elapsed:.2f} seconds.")
     
-    print_top_n_feature_importance(model.feature_importances_, FEATURES, n=26)
-    print("="*100)
-
     # ---- Evaluation ----
     y_pred = model.predict(x_test)
     acc = accuracy_score(y_test, y_pred)
@@ -73,7 +69,7 @@ def train_model_for_training():
 def train_model_for_production():
     """Train an XGBoost model for phishing URL detection on all available data and save for production deployment."""
     # ---- Load all data ----
-    x, y = load_and_preprocess_data(PROCESSED_PATH, FEATURES, label_col="label")
+    x, y = load_all_csvs()
     print(f"[INFO] Loaded full data with shape: {x.shape}")
 
     # ---- Train on all data ----

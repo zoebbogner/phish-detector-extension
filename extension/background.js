@@ -6,6 +6,7 @@ import { extractUrlFeatures } from './utils/url_features.js';
 import { putWithLimit } from './utils/cache.js';
 import XGBoostScorer from './utils/scorer.js';
 
+// add a check for bot finder like cloudflare, captcha, etc.
 let urlScorer = null;
 let contentScorer = null;
 let metaScorer = null;
@@ -42,13 +43,14 @@ function maybeRunMetaModel(tabId) {
     const contentData = contentScores.get(tabId);
     // Use the exact keys your meta model expects
     const metaFeatures = {
-        url_model_proba: urlData.score,
-        content_model_proba: contentData.score
+        content_model_proba: contentData.score,
+        url_model_proba: urlData.score
     };
+    console.log('Meta features:', metaFeatures);
     const metaScore = metaScorer.score(metaFeatures);
     putWithLimit(metaScores, tabId, metaScore);
     console.log(`Meta model phishing score for ${urlData.url}:`, metaScore);
-    const isPhishing = metaScore > 0.5;
+    const isPhishing = metaScore > 0.25;
     console.log(`Meta model decision for ${urlData.url}:`, isPhishing ? 'PHISHING' : 'BENIGN');
     chrome.storage.session.set({
         [String(tabId)]: {
@@ -108,7 +110,17 @@ chrome.runtime.onMessage.addListener((request, sender) => {
     if (!sender.tab || typeof sender.tab.id !== 'number') return;
 
     const tabId = sender.tab.id;
-    const contentScore = contentScorer.score(request.data);
+    let contentScore = contentScorer.score(request.data);
+    console.log('Content score:', contentScore);
+    const html_length = request.data.html_length;
+    if (html_length < 20000) {
+        // ratio ∈ (0..1]: when html_length=2000 → ratio=0; when html_length=0 → ratio=1
+        const ratio = (20000 - html_length) / 20000;
+        // pick a weight (e.g. 0.2 means “up to +20% if html_length=0”)
+        const SHORT_WEIGHT = 0.2;
+        const boostFactor = 1 + ratio * SHORT_WEIGHT;
+        contentScore *= boostFactor;
+    }
     putWithLimit(contentScores, tabId, { score: contentScore, features: request.data });
     maybeRunMetaModel(tabId);
 });

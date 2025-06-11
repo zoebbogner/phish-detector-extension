@@ -1,5 +1,4 @@
 import csv
-import logging
 
 import scrapy
 from models.content.utils.feature_helper import extract_html_features

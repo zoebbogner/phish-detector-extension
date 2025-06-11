@@ -54,7 +54,7 @@ CONCURRENT_REQUESTS = 8
 CONCURRENT_REQUESTS_PER_DOMAIN = 1
 
 # Introduce a fixed delay (in seconds) between requests to the same domain
-DOWNLOAD_DELAY = 2.0
+DOWNLOAD_DELAY = 1.5
 
 # Enable AutoThrottle to dynamically adjust rate based on server response times
 AUTOTHROTTLE_ENABLED = True

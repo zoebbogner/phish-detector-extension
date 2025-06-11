@@ -1,5 +1,5 @@
-PROCESSED_PATH = "data/processed/content.csv"  
-
+PROCESSED_PATH = "data/processed/content.csv"
+CONTROLLER_FEATURES_DIR = "controller/features"
 # === Model & Training Hyperparameters ===
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
@@ -8,13 +8,13 @@ RANDOM_STATE = 42
 XGB_PARAMS = {
     "eval_metric":    "logloss",
     "random_state":   RANDOM_STATE,
-    "n_estimators":   120,         # cut in half → faster & smaller
+    "n_estimators":   200,         # cut in half → faster & smaller
     "max_depth":      8,           # shallower trees
     "subsample":      0.8,         # row subsampling for variance reduction
     "colsample_bytree":0.8,        # feature subsampling 
     "reg_alpha":      1,         # L1 regularization
     "reg_lambda":     2,        # L2 regularization
-    "scale_pos_weight": 16.5,
+    "scale_pos_weight": 1,
     "min_child_weight": 3,
 }
 

@@ -18,3 +18,7 @@ mysql-connector-python
 scrapy
 setuptools
 brotli
+fastapi
+uvicorn
+requests
+seaborn

@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const { score, decision } = result;
         statusEl.innerHTML = `
-      <div>Confidence: <strong>${(1 - score.toFixed(3))*100}%</strong></div>
+      <div>Confidence: <strong>${(1 - score.toFixed(4))*100}%</strong></div>
       <div>Verdict:
         <span class="${decision ? 'phish' : 'benign'}">
           ${decision ? 'PHISHING' : 'BENIGN'}
